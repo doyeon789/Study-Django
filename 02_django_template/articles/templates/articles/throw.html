@@ -1,0 +1,9 @@
+{% extends "articles/base.html" %}
+
+{% block content %}
+<h1>Throw 페이지입니다.!!</h1>
+<form action="{% url "articles:catch" %}" method="GET">
+    <input type="text" name="message" id="message">
+    <input type="submit" value="던지기!">
+</form>
+{% endblock content %}
