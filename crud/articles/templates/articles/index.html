@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block content %}
+<h1>Article Index page</h1>
+<a href="{% url 'articles:new' %}">게시글 작성</a>
+
+{% for article in articles %}
+<p>글 번호 : {{article.pk}}</p>
+<p>글 제목 : {{article.title}}</p>
+
+<form action="{% url 'articles:delete' article.pk %}" method="POST">
+  {% csrf_token %}
+  <button>삭제</button>
+</form>
+<hr />
+{% endfor %} {% endblock content %}
