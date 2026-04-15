@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Article
+from .forms import ArticleForm
 
 def index(request):
     articles = Article.objects.all()
@@ -16,18 +17,29 @@ def detail(request, pk):
     }
     return render(request, 'articles/detail.html', context)
 
-def new(request):
-    return render(request, 'articles/new.html')
+# def new(request):
+#     form = ArticleForm()
+#     context = { 
+#         'form' : form
+#     }
+#    return render(request, 'articles/new.html', context)
 
 def create(request):
-    data = request.POST
-    title = data.get('title')
-    content = data.get('content')
-
-    print("title: ", title, content)
-    article = Article.objects.create(title=title, content=content)
-
-    return redirect('articles:detail', article.pk)
+    # 사용자의 요청 방법에 따라서 조건 분기
+    if request.method == 'POST':
+        # 사용자가 넘겨준 데이터를 ModelForm class에 집어 넣으면
+        # 필요한 field들의 정보를 알아서 가져와서 쓴다.
+        form = ArticleForm(request.POST)
+        #print(form)
+        if form.is_valid(): #유효성 검사
+            article = form.save()
+            return redirect('articles:detail', article.pk)
+    else:
+        form = ArticleForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'articles/new.html', context)
 
 def delete(request, pk):
     article = Article.objects.get(pk=pk)
@@ -35,23 +47,28 @@ def delete(request, pk):
 
     return redirect('articles:index')
 
-def edit(request, pk):
-    article = Article.objects.get(pk=pk)
-    context = {
-        'article': article
-    }
-    return render(request, 'articles/edit.html', context)
+# def edit(request, pk):
+#     article = Article.objects.get(pk=pk)
+#     form = ArticleForm(article)
+#     context = {
+#         'article': article,
+#         'form': form
+#     }
+#     return render(request, 'articles/edit.html', context)
 
 
 def update(request, pk):
-    data = request.POST
-    title = data.get('title')
-    content = data.get('content')
-
-    article = Article.objects.get(pk=pk)
-    article.title = title
-    article.content =content 
-    article.save()
-    return redirect('articles:detail', article.pk)
-
+    article= Article.objects.get(pk=pk)
+    if request.method == 'POST':   
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():
+            article = form.save()
+            return redirect('articles:detail', article.pk)
+    else : 
+        form = ArticleForm(instance=article)
+    context = {
+        'article':article,
+        'form':form
+    }
+    return render(request, 'articles/edit.html',context)
 
