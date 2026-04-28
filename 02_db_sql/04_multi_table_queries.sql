@@ -39,6 +39,30 @@ VALUES
 
 
 -- INNER JOIN
-
+SELECT articles.title, users.name
+FROM articles
+INNER JOIN users
+  ON articles.userId = users.id
+WHERE users.id = 1
 
 -- LEFT JOIN
+-- 1단계
+SELECT * FROM users
+LEFT JOIN articles
+  ON articles.userId = users.id;
+
+
+-- 2단계
+SELECT * FROM users
+LEFT JOIN articles
+  ON articles.userId = users.id
+WHERE articles.userId IS NULL;
+
+
+-- 3단계
+SELECT name FROM users
+LEFT JOIN articles
+  ON articles.userId = users.id
+WHERE articles.userId IS NULL;
+
+
