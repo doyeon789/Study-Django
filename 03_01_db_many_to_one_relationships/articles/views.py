@@ -31,9 +31,11 @@ def create(request):
 def detail(request, article_id):
     article = Article.objects.get(pk=article_id)
     comment_form = CommentForm()
+    comments = article.comment_set.all()
     context = {
         'article': article,
         'comment_form': comment_form,
+        'comments': comments
     }
     return render(request, 'articles/detail.html', context)
 
