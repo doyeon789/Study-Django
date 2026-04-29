@@ -61,15 +61,15 @@ def update(request, article_id):
     }
     return render(request, 'articles/update.html', context)
 
-def comments_create(request, pk):
-    article = Article.objects.get(pk=pk)
+def comments_create(request, article_id):
+    article = Article.objects.get(pk=article_id)
     comment_form = CommentForm(request.POST)
     if comment_form.is_valid():
         comment = comment_form.save(commit=False)
         comment.article = article
         comment.save()
 
-        return redirect('articles:detial', article.pk)
+        return redirect('articles:detail', article.pk)
     #유효성 검사에 실패 했을 때 에러 정보 및 데이터 전달
     context = {
         'article':article,
