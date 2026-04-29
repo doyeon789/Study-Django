@@ -79,7 +79,7 @@ def comments_create(request, article_id):
     }
     return render(request, 'articles/detail.html',context)
         
-def comments_delete(request, article_pk, comment_pk):
-    commnet = Comment.objects.get(pk=comment_pk)
+def comments_delete(request, article_id, comment_id):
+    commnet = Comment.objects.get(pk=comment_id)
     commnet.delete()
-    return redirect('articles:detaik',article_pk)
+    return redirect('articles:detail',article_id)
