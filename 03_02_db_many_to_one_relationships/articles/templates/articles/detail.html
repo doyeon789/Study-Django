@@ -11,11 +11,13 @@
   <p>수정일: {{ article.updated_at }}</p>
   <hr>
   {% if request.user.is_authenticated %}
+    {% if request.user == article.user %}
     <a href="{% url "articles:update" article.pk %}">EDIT</a>
     <form action="{% url "articles:delete" article.pk %}" method="POST">
       {% csrf_token %}
       <input type="submit" value="DELETE">
     </form>
+    {% endif %}
   {% endif %}
 
   {% comment %} 댓글 출력 {% endcomment %}
