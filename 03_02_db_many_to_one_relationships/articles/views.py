@@ -53,13 +53,16 @@ def delete(request, article_id):
 @login_required
 def update(request, article_id):
     article = Article.objects.get(pk=article_id)
-    if request.method == 'POST':
-        form = ArticleForm(request.POST, instance=article)
-        if form.is_valid():
-            form.save()
-            return redirect('articles:detail', article.pk)
+    if request.user == article.user:
+        if request.method == 'POST':
+            form = ArticleForm(request.POST, instance=article)
+            if form.is_valid():
+                form.save()
+                return redirect('articles:detail', article.pk)
+        else:
+            form = ArticleForm(instance=article)
     else:
-        form = ArticleForm(instance=article)
+        return redirect('articles:index')
     context = {
         'form': form,
         'article': article,
