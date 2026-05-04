@@ -91,6 +91,7 @@ def comments_create(request, article_id):
 
         # 외래 키 데이터를 준비
         comment.article = article
+        comment.user = request.user
 
         # 4. 저장
         comment.save()
