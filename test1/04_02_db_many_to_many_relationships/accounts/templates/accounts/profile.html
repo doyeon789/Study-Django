@@ -1,0 +1,37 @@
+{% extends "base.html" %} {% block content %}
+<hr />
+<h1>{{person.name}} 님의 프로필</h1>
+
+<div>
+  팔로잉 : {{person.followings.all|length}} / 팔로잉 :
+  {{person.followers.all|length}}
+</div>
+
+<div>
+  <form action="" method="POST">
+    {% csrf_token %} {% if request.user in person.followers.all %}
+    <input type="submit" value="언팔로우" />
+    {% else %}
+    <input type="submit" value="팔로우" />
+    {% endif %}
+  </form>
+</div>
+
+<h2>{{person.name}}가 작성한 게시글</h2>
+{% for article in person.article_sel.all %}
+<div>{{article.title}}</div>
+{% endfor %}
+<hr />
+
+<h2>{{person.name}}가 작성한 댓글</h2>
+{% for article in person.like_articles.all %}
+<div>{{comment.content}}</div>
+{% endfor %}
+<hr />
+
+<h2>{{person.name}}가 좋아요를 누른 게시물</h2>
+{% for article in person.like_articles.all %}
+<div>{{ article.title}}</div>
+{% endfor %}
+<hr />
+{% endblock content %}
