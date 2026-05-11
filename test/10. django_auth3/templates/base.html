@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <nav>
+    {% if user.is_authenticated %}
+      <h1>Hello, {{ user.username }}</h1>
+      <form action="{% url "accounts:logout" %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Logout">
+      </form>
+
+      <a href="{% url "articles:create" %}">Create</a>
+
+      <form action="{% url "accounts:delete" %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="delete">
+      </form>
+
+      <a href="{% url "accounts:update" %}">Update</a>
+    {% else %}
+      <a href="{% url "accounts:login" %}">Login</a> | 
+      <a href="{% url "accounts:signup" %}">SignUp</a>
+    {% endif %}
+  </nav>
+
+  {% block content %}
+ 
+  {% endblock content %}
+</body>
+</html>

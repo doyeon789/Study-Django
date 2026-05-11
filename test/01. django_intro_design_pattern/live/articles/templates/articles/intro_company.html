@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>회사 목록</h1>
+    {% for person in people_list %}
+        <br><a href="{% url "articles:intro_company" person.company person.name %}">회사 : {{ person.company }}, 이름: {{ person.name }}</a></br>
+    {% endfor %}
+</body>
+</html>
