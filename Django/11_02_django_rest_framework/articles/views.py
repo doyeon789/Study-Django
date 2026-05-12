@@ -3,9 +3,10 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 
+from django.db.models import Count
 
-from .models import Article
-from .serializers import ArticleListSerializer, ArticleSerializer
+from .models import Article, Comment
+from .serializers import ArticleListSerializer, ArticleSerializer, CommentSerializer
 
 
 # Create your views here.
@@ -41,7 +42,10 @@ def article_list(request):
 @api_view(['GET', 'DELETE', 'PATCH'])
 def article_detail(request, article_id):
     # 1. 단일 게시글 조회
-    article = Article.objects.get(pk=article_id)
+    # article = Article.objects.get(pk=article_id)
+    # 게시글 가져오면서 + 해당 게시글의 작성된 댓글의 개수까지 게산해서 조회
+    article = Article.objects.annotate(num_of_comments=Count('comment')).get(pk=article_id)
+
     if request.method == 'GET':
         # 2. 직렬화
         serializer = ArticleSerializer(article)
@@ -68,16 +72,53 @@ def article_detail(request, article_id):
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view()
+@api_view(['GET'])
 def comment_list(request):
-    pass
+    # 1. 댓글 목록 조회
+    comments = Comment.objects.all()
+    # 2. 댓글 목록 쿼리셋을 직려로하
+    serializer = CommentSerializer(comments, many=True)
+    # 3. 댓글 데이터르 ㄹ추출하여 응답
+    return Response(serializer.data)
 
 
-@api_view()
-def comment_detail(request):
-    pass
+@api_view(['GET','PUT','DELETE'])
+def comment_detail(request, comment_id):
+    # 1. 단일 댓글 조회
+    comment = Comment.objects.get(pk=comment_id)
+    if request.method == 'GET':
+        # 2. 직렬화
+        serializer = CommentSerializer(comment)
+        # 3. 직렬화된 댓글 데이터를 추출하여 응답
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+        # 1. 사요앚가 입력한 댓글 데이터를 직렬화
+        serializer = CommentSerializer(
+            comment,
+            data = request.data
+        )
+        # 2. 유효성 검사
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
 
 
-@api_view()
-def comment_create(request):
-    pass
+    elif request.method == 'DELETE':
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+def comment_create(request, article_id):
+    
+    # 1. 게시글 조회
+    article = Article.objects.get(pk=article_id)
+    # 2. 사용자가 입력한 댓글 데이터를 받아서 직렬화
+    serializer = CommentSerializer(data = request.data)
+    # 3. 유효성 검사
+    if serializer.is_valid(raise_exception=True):
+        # 5. 누락된 외래 키 데이터를 추가해서 저장
+        serializer.save(article=article)
+        # 4. 저장 후 201 상태 코드 응답
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
